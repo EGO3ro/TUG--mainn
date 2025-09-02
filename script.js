@@ -105,6 +105,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Copy main IP functionality (welcome section)
+    const copyIpMainBtn = document.querySelector('.copy-ip-main');
+    if (copyIpMainBtn) {
+        copyIpMainBtn.addEventListener('click', function() {
+            const ipAddress = document.querySelector('.ip-address-main').textContent;
+            navigator.clipboard.writeText(ipAddress).then(() => {
+                showNotification('Sunucu IP adresi kopyalandı!', 'success');
+                this.textContent = 'KOPYALANDI!';
+                setTimeout(() => {
+                    this.textContent = 'KOPYALA';
+                }, 2000);
+            });
+        });
+    }
+
     // Real-time server info updates
     function updateServerInfo() {
         const playerCount = document.querySelector('.info-card:first-child .info-content p');
