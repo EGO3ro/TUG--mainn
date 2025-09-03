@@ -1162,6 +1162,41 @@ body.light-theme .activity-chart {
     font-style: italic;
 }
 
+/* Player Count Display */
+.player-count-display {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 140, 0, 0.1);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 140, 0, 0.3);
+}
+
+.player-count-display h3 {
+    color: #ff8c00;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.count-display {
+    margin: 20px 0;
+}
+
+.player-count-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ff8c00;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.player-count-label {
+    display: block;
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-top: 10px;
+}
+
 /* Tracker Message Styling */
 .tracker-message {
     text-align: center;
