@@ -698,3 +698,60 @@ body.light-theme .theme-toggle:hover {
     background: #ff8c00;
     color: #ffffff;
 }
+
+/* Server Tracker Footer */
+.server-tracker {
+    margin-top: 40px;
+    padding: 20px 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 2px solid #ff8c00;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.tracker-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.server-tracker h3 {
+    color: #ff8c00;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.server-tracker a {
+    display: inline-block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+}
+
+.server-tracker a:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.3);
+}
+
+.server-tracker img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Light theme support for tracker */
+body.light-theme .server-tracker {
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 2px solid #ff8c00;
+}
+
+body.light-theme .server-tracker h3 {
+    color: #d4761a;
+}
