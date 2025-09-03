@@ -28,18 +28,24 @@
             </button>
         </header>
 
+        <div class="welcome-section">
+            <h2 class="welcome-title">Ego Dust'a Hoş Geldiniz</h2>
+            <p class="welcome-subtitle">Profesyonel CS2 deneyimi için hazır olun!</p>
+            <div class="server-ip-display">
+                <span class="ip-label">Sunucu IP:</span>
+                <span class="ip-address-main">95.173.175.34:27015</span>
+                <button class="copy-ip-main" onclick="copyIP()">KOPYALA</button>
+            </div>
+        </div>
+
         <div class="server-tracker-main">
             <div class="tracker-image">
                 <img src="http://tracker.oyunyoneticisi.com/userbar.php?ip=95.173.175.34&port=27015&t=2" 
                      alt="EGO DUST Server Status" id="serverImage">
             </div>
             <div class="server-connect-main">
-                <div class="connect-info">
-                    <span class="ip-label">Sunucu IP:</span>
-                    <span class="ip-address-main">95.173.175.34:27015</span>
-                    <button class="copy-ip-main" onclick="copyIP()">KOPYALA</button>
-                </div>
                 <button class="join-server-btn" onclick="joinServer()">SUNUCUYA KATIL</button>
+                <p class="tracker-info">Canlı sunucu durumu için yukarıdaki görsel otomatik güncellenir</p>
             </div>
         </div>
 
