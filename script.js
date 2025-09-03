@@ -79,6 +79,8 @@ async function fetchServerData() {
                     vacSecure: 'Evet'
                 };
                 
+                // Update global data for modal
+                currentServerData = realData;
                 updateServerInfo(realData);
                 updatePlayersList(realData.players);
                 updateServerStatus('online');
@@ -159,24 +161,33 @@ async function fetchServerData() {
 function showTrackerMessage() {
     const playersList = document.getElementById('playersList');
     if (playersList) {
-        playersList.innerHTML = `
-            <div class="tracker-message">
-                <h3>🎮 Gerçek Oyuncu Bilgileri</h3>
-                <p>Canlı oyuncu listesi ve sunucu detayları yukarıdaki tracker görselinde gösterilmektedir.</p>
-                <p>Bu görsel gerçek zamanlı olarak güncellenir ve şu bilgileri içerir:</p>
-                <ul>
-                    <li>• Çevrimiçi oyuncu sayısı</li>
-                    <li>• Oyuncu isimleri</li>
-                    <li>• Aktif harita</li>
-                    <li>• Sunucu durumu</li>
-                    <li>• Ping bilgileri</li>
-                </ul>
-                <p><strong>Sahte oyuncu isimleri gösterilmemektedir.</strong></p>
-                <button onclick="showServerInfoModal()" class="tracker-detail-btn">
-                    📊 Sunucu Detayları
-                </button>
-            </div>
-        `;
+        // Show live player data directly on main page
+        const currentData = getCurrentPlayerData();
+        
+        if (currentData.players && currentData.players.length > 0) {
+            // Display real players with stats
+            playersList.innerHTML = generateMainPagePlayersList(currentData.players);
+        } else {
+            // Show tracker message when no real data available
+            playersList.innerHTML = `
+                <div class="tracker-message">
+                    <h3>🎮 Gerçek Oyuncu Bilgileri</h3>
+                    <p>Canlı oyuncu listesi ve sunucu detayları yukarıdaki tracker görselinde gösterilmektedir.</p>
+                    <p>Bu görsel gerçek zamanlı olarak güncellenir ve şu bilgileri içerir:</p>
+                    <ul>
+                        <li>• Çevrimiçi oyuncu sayısı</li>
+                        <li>• Oyuncu isimleri</li>
+                        <li>• Aktif harita</li>
+                        <li>• Sunucu durumu</li>
+                        <li>• Ping bilgileri</li>
+                    </ul>
+                    <p><strong>Sahte oyuncu isimleri gösterilmemektedir.</strong></p>
+                    <button onclick="showServerInfoModal()" class="tracker-detail-btn">
+                        📊 Sunucu Detayları
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
@@ -571,17 +582,27 @@ function openTracker() {
 }
 
 function showServerInfoModal() {
+    // Get current server data
+    const currentPlayerData = getCurrentPlayerData();
+    
     const modal = document.createElement('div');
     modal.className = 'server-info-modal';
     modal.innerHTML = `
         <div class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>🎮 EGO DUST - Sunucu Bilgileri</h2>
+                    <h2>🎮 EGO DUST - Canlı İstatistikler</h2>
                     <button class="modal-close" onclick="closeServerInfoModal()">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="server-info-grid">
+                        <div class="info-section">
+                            <h3>👥 Aktif Oyuncular (${currentPlayerData.playerCount}/${currentPlayerData.maxPlayers})</h3>
+                            <div class="live-players-list">
+                                ${generateLivePlayersList(currentPlayerData.players)}
+                            </div>
+                        </div>
+                        
                         <div class="info-section">
                             <h3>📊 Sunucu Detayları</h3>
                             <div class="info-item">
@@ -593,20 +614,20 @@ function showServerInfoModal() {
                                 <span class="value">95.173.175.34:27015</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">Oyun:</span>
-                                <span class="value">Counter-Strike 2</span>
+                                <span class="label">Aktif Harita:</span>
+                                <span class="value">${currentPlayerData.map}</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">Maksimum Oyuncu:</span>
-                                <span class="value">32</span>
+                                <span class="label">Oyun Modu:</span>
+                                <span class="value">${currentPlayerData.gameMode}</span>
                             </div>
                             <div class="info-item">
                                 <span class="label">VAC Güvenli:</span>
-                                <span class="value">✅ Evet</span>
+                                <span class="value">✅ ${currentPlayerData.vacSecure}</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">Bölge:</span>
-                                <span class="value">Türkiye</span>
+                                <span class="label">Durum:</span>
+                                <span class="value status-${currentPlayerData.status}">🟢 Çevrimiçi</span>
                             </div>
                         </div>
                         
@@ -717,6 +738,8 @@ async function querySourceServer() {
                     vacSecure: queryData.secure ? 'Evet' : 'Hayır'
                 };
                 
+                // Update global data
+                currentServerData = realData;
                 updateServerInfo(realData);
                 updatePlayersList(realData.players);
                 updateServerStatus('online');
@@ -740,6 +763,8 @@ async function querySourceServer() {
                     vacSecure: 'Evet'
                 };
                 
+                // Update global data
+                currentServerData = realData;
                 updateServerInfo(realData);
                 if (realData.players.length > 0) {
                     updatePlayersList(realData.players);
@@ -776,6 +801,71 @@ function showPlayerCount(count) {
             </div>
         `;
     }
+}
+
+// Global variable to store current player data
+let currentServerData = {
+    players: [],
+    playerCount: 0,
+    maxPlayers: 32,
+    map: 'Tracker\'da görünür',
+    status: 'online',
+    gameMode: 'CS2',
+    vacSecure: 'Evet'
+};
+
+function getCurrentPlayerData() {
+    return currentServerData;
+}
+
+function generateMainPagePlayersList(players) {
+    if (!players || players.length === 0) {
+        return `
+            <div class="no-players-message">
+                <p>🔍 Gerçek oyuncu verileri tracker görselinde gösterilmektedir</p>
+                <p>Canlı oyuncu listesi için yukarıdaki tracker görselini kontrol edin.</p>
+            </div>
+        `;
+    }
+    
+    return players.map((player, index) => `
+        <div class="player-item ${index < 3 ? 'top-player' : ''}">
+            <div class="player-rank">${index + 1}</div>
+            <div class="player-info">
+                <div class="player-name">${player.name}</div>
+                <div class="player-stats">
+                    <span>Skor: ${player.score}</span>
+                    <span>Ping: ${player.ping}ms</span>
+                    <span>Süre: ${player.time}dk</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function generateLivePlayersList(players) {
+    if (!players || players.length === 0) {
+        return `
+            <div class="no-players-message">
+                <p>🔍 Gerçek oyuncu verileri tracker görselinde gösterilmektedir</p>
+                <p>Canlı oyuncu listesi için yukarıdaki tracker görselini kontrol edin.</p>
+            </div>
+        `;
+    }
+    
+    return players.map((player, index) => `
+        <div class="live-player-item ${index < 3 ? 'top-player' : ''}">
+            <div class="player-rank-modal">${index + 1}</div>
+            <div class="player-info-modal">
+                <div class="player-name-modal">${player.name}</div>
+                <div class="player-stats-modal">
+                    <span class="stat-score">Skor: ${player.score}</span>
+                    <span class="stat-ping">Ping: ${player.ping}ms</span>
+                    <span class="stat-time">Süre: ${player.time}dk</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
 function openDiscord() {
