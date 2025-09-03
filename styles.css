@@ -1003,7 +1003,7 @@ body.light-theme .server-tracker h3 {
     font-weight: 500;
 }
 
-.refresh-btn, .tracker-btn {
+.refresh-btn, .tracker-btn, .discord-btn {
     background: linear-gradient(135deg, #ff8c00 0%, #e07600 100%);
     color: #ffffff;
     border: none;
@@ -1015,10 +1015,18 @@ body.light-theme .server-tracker h3 {
     margin-right: 10px;
 }
 
-.refresh-btn:hover, .tracker-btn:hover {
+.refresh-btn:hover, .tracker-btn:hover, .discord-btn:hover {
     background: linear-gradient(135deg, #e07600 0%, #cc6600 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+}
+
+.discord-btn {
+    background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+}
+
+.discord-btn:hover {
+    background: linear-gradient(135deg, #4752c4 0%, #3c4aa0 100%);
 }
 
 /* Server Activity Section */

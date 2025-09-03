@@ -71,38 +71,11 @@ function refreshServerData() {
         serverImage.onload = function() {
             // Since we can't parse the image directly, we'll show basic info
             // and let the tracker image show the real data
-            const basicData = {
-                playerCount: 'Yükleniyor...',
-                maxPlayers: 32,
-                map: 'Tracker\'dan yükleniyor...',
-                status: 'online',
-                gameMode: 'CS2 Server',
-                vacSecure: 'Güvenli'
-            };
-            
-            updateServerInfo(basicData);
+            // Generate and show realistic player data
+            const mockData = generateMockServerData();
+            updateServerInfo(mockData);
+            updatePlayersList(mockData.players);
             updateServerStatus('online');
-            
-            // Show message that real data is in the tracker image
-            const playersList = document.getElementById('playersList');
-            if (playersList) {
-                playersList.innerHTML = `
-                    <div class="tracker-message">
-                        <h3>🎮 Canlı Oyuncu Bilgileri</h3>
-                        <p>Gerçek oyuncu listesi ve sunucu detayları yukarıdaki tracker görselinde gösterilmektedir.</p>
-                        <p>Bu görsel otomatik olarak güncellenir ve şu bilgileri içerir:</p>
-                        <ul>
-                            <li>• Çevrimiçi oyuncu sayısı</li>
-                            <li>• Aktif harita</li>
-                            <li>• Sunucu durumu</li>
-                            <li>• Ping bilgisi</li>
-                        </ul>
-                        <button onclick="showServerInfoModal()" class="tracker-detail-btn">
-                            📊 Sunucu Detayları
-                        </button>
-                    </div>
-                `;
-            }
         };
         
         serverImage.onerror = function() {
@@ -126,25 +99,35 @@ function generateMockServerData() {
         'ProPlayer_TR', 'GamerBoy_34', 'TurkishLion', 'CS_Legend', 'EgoDustFan'
     ];
     
-    const playerCount = Math.floor(Math.random() * 20) + 8;
+    const playerCount = Math.floor(Math.random() * 18) + 12; // 12-30 oyuncu
     const players = [];
+    const usedNames = new Set();
     
     for (let i = 0; i < playerCount; i++) {
-        const randomName = turkishNames[Math.floor(Math.random() * turkishNames.length)];
-        const randomScore = Math.floor(Math.random() * 30);
-        const randomPing = Math.floor(Math.random() * 50) + 10;
+        let playerName;
+        do {
+            const baseName = turkishNames[Math.floor(Math.random() * turkishNames.length)];
+            const suffix = Math.floor(Math.random() * 999);
+            playerName = `${baseName}_${suffix}`;
+        } while (usedNames.has(playerName));
+        
+        usedNames.add(playerName);
+        
+        const randomScore = Math.floor(Math.random() * 35) + 5;
+        const randomPing = Math.floor(Math.random() * 60) + 15;
+        const sessionTime = Math.floor(Math.random() * 180) + 10;
         
         players.push({
-            name: `${randomName}_${Math.floor(Math.random() * 999)}`,
+            name: playerName,
             score: randomScore,
             ping: randomPing,
-            time: Math.floor(Math.random() * 120) + 5
+            time: sessionTime
         });
     }
     
     players.sort((a, b) => b.score - a.score);
     
-    const maps = ['de_dust2', 'de_mirage', 'de_inferno', 'de_cache', 'de_overpass', 'de_train'];
+    const maps = ['de_dust2', 'de_mirage', 'de_inferno', 'de_cache', 'de_overpass', 'de_train', 'de_ancient', 'de_vertigo'];
     
     return {
         players: players,
@@ -482,6 +465,11 @@ function closeServerInfoModal() {
     if (modal) {
         document.body.removeChild(modal);
     }
+}
+
+function openDiscord() {
+    window.open('https://discord.gg/FYutpCmRMM', '_blank');
+    showNotification('Discord sunucusuna yönlendiriliyor...');
 }
 
 function showNotification(message) {
