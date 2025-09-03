@@ -127,11 +127,19 @@ async function fetchServerData() {
             serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
             
             serverImage.onload = function() {
-                const realisticData = generateRealisticPlayerData();
-                updateServerInfo(realisticData);
-                updatePlayersList(realisticData.players);
+                // Don't show fake players, just show that tracker image has real data
+                const basicData = {
+                    playerCount: 'Tracker\'da görünür',
+                    maxPlayers: 32,
+                    map: 'Tracker\'da görünür',
+                    status: 'online',
+                    gameMode: 'CS2',
+                    vacSecure: 'Evet'
+                };
+                updateServerInfo(basicData);
+                showTrackerMessage();
                 updateServerStatus('online');
-                showNotification('Tracker görselinde gerçek veriler gösterilmektedir');
+                showNotification('Gerçek oyuncu verileri tracker görselinde gösterilmektedir');
             };
             
             serverImage.onerror = function() {
@@ -145,6 +153,30 @@ async function fetchServerData() {
     const lastUpdateElement = document.getElementById('lastUpdate');
     if (lastUpdateElement) {
         lastUpdateElement.textContent = serverData.lastUpdate.toLocaleTimeString('tr-TR');
+    }
+}
+
+function showTrackerMessage() {
+    const playersList = document.getElementById('playersList');
+    if (playersList) {
+        playersList.innerHTML = `
+            <div class="tracker-message">
+                <h3>🎮 Gerçek Oyuncu Bilgileri</h3>
+                <p>Canlı oyuncu listesi ve sunucu detayları yukarıdaki tracker görselinde gösterilmektedir.</p>
+                <p>Bu görsel gerçek zamanlı olarak güncellenir ve şu bilgileri içerir:</p>
+                <ul>
+                    <li>• Çevrimiçi oyuncu sayısı</li>
+                    <li>• Oyuncu isimleri</li>
+                    <li>• Aktif harita</li>
+                    <li>• Sunucu durumu</li>
+                    <li>• Ping bilgileri</li>
+                </ul>
+                <p><strong>Sahte oyuncu isimleri gösterilmemektedir.</strong></p>
+                <button onclick="showServerInfoModal()" class="tracker-detail-btn">
+                    📊 Sunucu Detayları
+                </button>
+            </div>
+        `;
     }
 }
 
@@ -453,10 +485,17 @@ function parseTrackerData(doc) {
             });
         }
         
-        // If still no players found, use realistic mock data
+        // If still no players found, return empty data instead of mock
         if (players.length === 0) {
-            const playerData = generateRealisticPlayerData();
-            return playerData;
+            return {
+                players: [],
+                playerCount: 0,
+                maxPlayers: 32,
+                map: 'Unknown',
+                status: 'online',
+                gameMode: 'CS2',
+                vacSecure: 'Evet'
+            };
         }
         
         return {
@@ -702,7 +741,11 @@ async function querySourceServer() {
                 };
                 
                 updateServerInfo(realData);
-                updatePlayersList(realData.players);
+                if (realData.players.length > 0) {
+                    updatePlayersList(realData.players);
+                } else {
+                    showPlayerCount(realData.playerCount);
+                }
                 updateServerStatus('online');
                 showNotification(`Sunucuda ${realData.playerCount} oyuncu aktif!`);
                 return true;
