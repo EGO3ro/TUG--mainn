@@ -1102,6 +1102,79 @@ body.light-theme .activity-chart {
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Tracker Message Styling */
+.tracker-message {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 140, 0, 0.1);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 140, 0, 0.3);
+}
+
+.tracker-message h3 {
+    color: #ff8c00;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.tracker-message p {
+    color: #ffffff;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.tracker-message ul {
+    text-align: left;
+    max-width: 300px;
+    margin: 20px auto;
+    color: #cccccc;
+}
+
+.tracker-message li {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.tracker-detail-btn {
+    background: linear-gradient(135deg, #ff8c00 0%, #e07600 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+.tracker-detail-btn:hover {
+    background: linear-gradient(135deg, #e07600 0%, #cc6600 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+}
+
+.tracker-info {
+    color: #cccccc;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Light theme adjustments for tracker message */
+body.light-theme .tracker-message {
+    background: rgba(255, 140, 0, 0.15);
+    border: 2px solid rgba(255, 140, 0, 0.4);
+}
+
+body.light-theme .tracker-message p {
+    color: #333333;
+}
+
+body.light-theme .tracker-message ul {
+    color: #555555;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .server-tracker-main {

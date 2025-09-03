@@ -62,23 +62,60 @@ function updateThemeToggle(isLight) {
 function refreshServerData() {
     updateStatus('Sunucu bilgileri güncelleniyor...', 'loading');
     
-    setTimeout(() => {
-        const mockData = generateMockServerData();
-        updateServerInfo(mockData);
-        updatePlayersList(mockData.players);
-        updateServerStatus('online');
+    // Try to fetch real server data from tracker image
+    const serverImage = document.getElementById('serverImage');
+    if (serverImage) {
+        serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
         
-        const serverImage = document.getElementById('serverImage');
-        if (serverImage) {
-            serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
-        }
+        // Listen for image load to extract info
+        serverImage.onload = function() {
+            // Since we can't parse the image directly, we'll show basic info
+            // and let the tracker image show the real data
+            const basicData = {
+                playerCount: 'Yükleniyor...',
+                maxPlayers: 32,
+                map: 'Tracker\'dan yükleniyor...',
+                status: 'online',
+                gameMode: 'CS2 Server',
+                vacSecure: 'Güvenli'
+            };
+            
+            updateServerInfo(basicData);
+            updateServerStatus('online');
+            
+            // Show message that real data is in the tracker image
+            const playersList = document.getElementById('playersList');
+            if (playersList) {
+                playersList.innerHTML = `
+                    <div class="tracker-message">
+                        <h3>🎮 Canlı Oyuncu Bilgileri</h3>
+                        <p>Gerçek oyuncu listesi ve sunucu detayları yukarıdaki tracker görselinde gösterilmektedir.</p>
+                        <p>Bu görsel otomatik olarak güncellenir ve şu bilgileri içerir:</p>
+                        <ul>
+                            <li>• Çevrimiçi oyuncu sayısı</li>
+                            <li>• Aktif harita</li>
+                            <li>• Sunucu durumu</li>
+                            <li>• Ping bilgisi</li>
+                        </ul>
+                        <button onclick="openTracker()" class="tracker-detail-btn">
+                            📊 Detaylı İstatistikler İçin Tıklayın
+                        </button>
+                    </div>
+                `;
+            }
+        };
         
-        serverData.lastUpdate = new Date();
-        const lastUpdateElement = document.getElementById('lastUpdate');
-        if (lastUpdateElement) {
-            lastUpdateElement.textContent = formatTime(serverData.lastUpdate);
-        }
-    }, 1500);
+        serverImage.onerror = function() {
+            updateServerStatus('offline');
+            updateStatus('Sunucu bilgilerine ulaşılamıyor', 'offline');
+        };
+    }
+    
+    serverData.lastUpdate = new Date();
+    const lastUpdateElement = document.getElementById('lastUpdate');
+    if (lastUpdateElement) {
+        lastUpdateElement.textContent = formatTime(serverData.lastUpdate);
+    }
 }
 
 function generateMockServerData() {
