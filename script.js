@@ -83,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (discordBtn) {
         discordBtn.addEventListener('click', function() {
             showNotification('Discord sunucusuna yönlendiriliyor...', 'info');
-            // Simulate opening Discord
+            // Open Discord server
             setTimeout(() => {
-                window.open('https://discord.gg/example', '_blank');
+                window.open('https://discord.gg/FYutpCmRMM', '_blank');
             }, 1000);
         });
     }
@@ -319,6 +319,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (competitiveBtn) {
         competitiveBtn.classList.add('active');
     }
+
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = themeToggle.querySelector('.theme-icon');
+    const themeText = themeToggle.querySelector('.theme-text');
+    
+    // Load saved theme or default to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'AYDINLIK TEMA';
+    }
+    
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('light-theme');
+        
+        if (document.body.classList.contains('light-theme')) {
+            // Switch to light theme
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'AYDINLIK TEMA';
+            localStorage.setItem('theme', 'light');
+            showNotification('Aydınlık tema aktif!', 'info');
+        } else {
+            // Switch to dark theme
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'KOYU TEMA';
+            localStorage.setItem('theme', 'dark');
+            showNotification('Koyu tema aktif!', 'info');
+        }
+    });
 
     // Welcome message
     setTimeout(() => {
