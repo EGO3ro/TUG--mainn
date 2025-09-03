@@ -44,6 +44,53 @@
                      alt="EGO DUST Server Status" id="serverImage">
             </div>
             <div class="server-connect-main">
+                <div class="menu-section current-players">
+                    <h2>GÜNCEL OYUNCULAR</h2>
+                    <div class="players-container">
+                        <div class="players-list" id="playersList">
+                            <div class="loading-players">
+                                <div class="spinner"></div>
+                                <p>Oyuncu listesi yükleniyor...</p>
+                            </div>
+                        </div>
+                        <div class="players-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">👥</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="totalPlayers">-</div>
+                                    <div class="stat-label">Toplam Oyuncu</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="maxPlayers">32</div>
+                                    <div class="stat-label">Maksimum</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🗺️</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="currentMap">-</div>
+                                    <div class="stat-label">Güncel Harita</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Real Player Names Image from Tracker -->
+                    <div class="real-players-section">
+                        <h3>🎮 Canlı Oyuncu Listesi</h3>
+                        <div class="tracker-players-image">
+                            <img id="playersImage" src="https://tracker.oyunyoneticisi.com/userbar.php?ip=95.173.175.34&port=27015&type=players" 
+                                 alt="Canlı Oyuncu Listesi" 
+                                 onerror="this.style.display='none'; document.querySelector('.players-error').style.display='block';">
+                            <div class="players-error" style="display: none;">
+                                <p>Oyuncu listesi şu anda yüklenemiyor.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
                 <button class="join-server-btn" onclick="joinServer()">SUNUCUYA KATIL</button>
                 <p class="tracker-info">Canlı sunucu durumu için yukarıdaki görsel otomatik güncellenir</p>
             </div>

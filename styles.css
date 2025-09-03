@@ -1118,6 +1118,50 @@ body.light-theme .activity-chart {
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Real Players Section */
+.real-players-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 140, 0, 0.2);
+}
+
+.real-players-section h3 {
+    color: #ff8c00;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.tracker-players-image {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 140, 0, 0.1);
+}
+
+.tracker-players-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.tracker-players-image img:hover {
+    transform: scale(1.02);
+}
+
+.players-error {
+    color: #ff6b6b;
+    padding: 20px;
+    text-align: center;
+    font-style: italic;
+}
+
 /* Tracker Message Styling */
 .tracker-message {
     text-align: center;

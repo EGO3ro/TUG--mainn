@@ -220,12 +220,17 @@ function updateStatus(message, type) {
 }
 
 function startAutoRefresh() {
-    setInterval(refreshServerData, 30000);
-    
+    // Auto-refresh tracker image every 60 seconds
     setInterval(() => {
         const serverImage = document.getElementById('serverImage');
         if (serverImage) {
             serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
+        }
+        
+        // Also refresh players image
+        const playersImage = document.getElementById('playersImage');
+        if (playersImage) {
+            playersImage.src = `https://tracker.oyunyoneticisi.com/userbar.php?ip=95.173.175.34&port=27015&type=players&_t=${Date.now()}`;
         }
     }, 60000);
 }
