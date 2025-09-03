@@ -97,8 +97,8 @@ function refreshServerData() {
                             <li>• Sunucu durumu</li>
                             <li>• Ping bilgisi</li>
                         </ul>
-                        <button onclick="openTracker()" class="tracker-detail-btn">
-                            📊 Detaylı İstatistikler İçin Tıklayın
+                        <button onclick="showServerInfoModal()" class="tracker-detail-btn">
+                            📊 Sunucu Detayları
                         </button>
                     </div>
                 `;
@@ -361,6 +361,127 @@ function joinServer() {
 
 function openTracker() {
     window.open(TRACKER_API, '_blank');
+}
+
+function showServerInfoModal() {
+    const modal = document.createElement('div');
+    modal.className = 'server-info-modal';
+    modal.innerHTML = `
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🎮 EGO DUST - Sunucu Bilgileri</h2>
+                    <button class="modal-close" onclick="closeServerInfoModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="server-info-grid">
+                        <div class="info-section">
+                            <h3>📊 Sunucu Detayları</h3>
+                            <div class="info-item">
+                                <span class="label">Sunucu Adı:</span>
+                                <span class="value">EGO DUST CS2 Server</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">IP Adresi:</span>
+                                <span class="value">95.173.175.34:27015</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Oyun:</span>
+                                <span class="value">Counter-Strike 2</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Maksimum Oyuncu:</span>
+                                <span class="value">32</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">VAC Güvenli:</span>
+                                <span class="value">✅ Evet</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Bölge:</span>
+                                <span class="value">Türkiye</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>🗺️ Harita Rotasyonu</h3>
+                            <div class="map-list">
+                                <div class="map-item">de_dust2</div>
+                                <div class="map-item">de_mirage</div>
+                                <div class="map-item">de_inferno</div>
+                                <div class="map-item">de_cache</div>
+                                <div class="map-item">de_overpass</div>
+                                <div class="map-item">de_train</div>
+                                <div class="map-item">de_nuke</div>
+                                <div class="map-item">de_vertigo</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>⚙️ Sunucu Özellikleri</h3>
+                            <div class="features-list">
+                                <div class="feature-item">🔫 Competitive Modu</div>
+                                <div class="feature-item">🎯 128 Tick Rate</div>
+                                <div class="feature-item">🛡️ Anti-Cheat Koruması</div>
+                                <div class="feature-item">📊 İstatistik Takibi</div>
+                                <div class="feature-item">🏆 Rank Sistemi</div>
+                                <div class="feature-item">💬 Voice Chat</div>
+                                <div class="feature-item">🔄 Otomatik Restart</div>
+                                <div class="feature-item">⚡ Düşük Ping</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>📋 Sunucu Kuralları</h3>
+                            <div class="rules-list">
+                                <div class="rule-item">1. Hile yasaktır</div>
+                                <div class="rule-item">2. Küfür ve hakaret yasaktır</div>
+                                <div class="rule-item">3. Spam yapmayın</div>
+                                <div class="rule-item">4. Takım arkadaşlarınızı öldürmeyin</div>
+                                <div class="rule-item">5. Mikrofonu gereksiz kullanmayın</div>
+                                <div class="rule-item">6. Adminlere saygılı olun</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button onclick="copyIP()" class="action-btn copy-btn">
+                            📋 IP Kopyala
+                        </button>
+                        <button onclick="joinServer()" class="action-btn join-btn">
+                            🎮 Sunucuya Katıl
+                        </button>
+                        <button onclick="window.open('${TRACKER_API}', '_blank')" class="action-btn tracker-btn">
+                            📊 Canlı İstatistikler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal || e.target.classList.contains('modal-overlay')) {
+            closeServerInfoModal();
+        }
+    });
+    
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeServerInfoModal();
+        }
+    });
+}
+
+function closeServerInfoModal() {
+    const modal = document.querySelector('.server-info-modal');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
 }
 
 function showNotification(message) {
