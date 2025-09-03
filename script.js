@@ -1,358 +1,365 @@
-// CS2 Server Menu JavaScript
+// EGO DUST CS2 Server Status Script
+const SERVER_IP = '95.173.175.34';
+const SERVER_PORT = '27015';
+const TRACKER_API = `https://tracker.oyunyoneticisi.com/?ip=${SERVER_IP}&port=${SERVER_PORT}`;
+const USERBAR_API = `http://tracker.oyunyoneticisi.com/userbar.php?ip=${SERVER_IP}&port=${SERVER_PORT}&t=2`;
+
+// Server data cache
+let serverData = {
+    players: [],
+    playerCount: 0,
+    maxPlayers: 32,
+    map: 'de_dust2',
+    status: 'offline',
+    lastUpdate: null
+};
+
+// Initialize page when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Game Mode Button Interactions
-    const modeButtons = document.querySelectorAll('.mode-btn');
-    modeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            modeButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const modeName = this.querySelector('span').textContent;
-            showNotification(`${modeName} modu seçildi!`);
-        });
-    });
+    initializePage();
+    startAutoRefresh();
+});
 
-    // Action Button Interactions
-    const joinServerBtn = document.querySelector('.join-server');
-    const viewStatsBtn = document.querySelector('.view-stats');
-    const leaderboardBtn = document.querySelector('.leaderboard');
-    const discordBtn = document.querySelector('.discord');
-
-    if (joinServerBtn) {
-        joinServerBtn.addEventListener('click', function() {
-            showNotification('Sunucuya bağlanılıyor...', 'success');
-            // Simulate connection delay
-            setTimeout(() => {
-                showNotification('Sunucuya başarıyla bağlandı!', 'success');
-            }, 2000);
-        });
-    }
-
-    if (viewStatsBtn) {
-        viewStatsBtn.addEventListener('click', function() {
-            showModal('İstatistikler', `
-                <div class="stats-content">
-                    <div class="stat-item">
-                        <span class="stat-label">Toplam Öldürme:</span>
-                        <span class="stat-value">1,247</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Ölüm:</span>
-                        <span class="stat-value">892</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">K/D Oranı:</span>
-                        <span class="stat-value">1.40</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Kazanma Oranı:</span>
-                        <span class="stat-value">68%</span>
-                    </div>
-                </div>
-            `);
-        });
-    }
-
-    if (leaderboardBtn) {
-        leaderboardBtn.addEventListener('click', function() {
-            showModal('Liderlik Tablosu', `
-                <div class="leaderboard-content">
-                    <div class="leader-item">
-                        <span class="rank">1.</span>
-                        <span class="player">ProGamer2024</span>
-                        <span class="score">2,450</span>
-                    </div>
-                    <div class="leader-item">
-                        <span class="rank">2.</span>
-                        <span class="player">EliteShooter</span>
-                        <span class="score">2,380</span>
-                    </div>
-                    <div class="leader-item">
-                        <span class="rank">3.</span>
-                        <span class="player">HeadshotKing</span>
-                        <span class="score">2,290</span>
-                    </div>
-                </div>
-            `);
-        });
-    }
-
-    if (discordBtn) {
-        discordBtn.addEventListener('click', function() {
-            showNotification('Discord sunucusuna yönlendiriliyor...', 'info');
-            // Open Discord server
-            setTimeout(() => {
-                window.open('https://discord.gg/FYutpCmRMM', '_blank');
-            }, 1000);
-        });
-    }
-
-    // Copy IP functionality
-    const copyIpBtn = document.querySelector('.copy-ip');
-    if (copyIpBtn) {
-        copyIpBtn.addEventListener('click', function() {
-            const ipAddress = document.querySelector('.ip-address').textContent;
-            navigator.clipboard.writeText(ipAddress).then(() => {
-                showNotification('IP adresi kopyalandı!', 'success');
-                this.textContent = 'KOPYALANDI!';
-                setTimeout(() => {
-                    this.textContent = 'KOPYALA';
-                }, 2000);
-            });
-        });
-    }
-
-    // Copy main IP functionality (welcome section)
-    const copyIpMainBtn = document.querySelector('.copy-ip-main');
-    if (copyIpMainBtn) {
-        copyIpMainBtn.addEventListener('click', function() {
-            const ipAddress = document.querySelector('.ip-address-main').textContent;
-            navigator.clipboard.writeText(ipAddress).then(() => {
-                showNotification('Sunucu IP adresi kopyalandı!', 'success');
-                this.textContent = 'KOPYALANDI!';
-                setTimeout(() => {
-                    this.textContent = 'KOPYALA';
-                }, 2000);
-            });
-        });
-    }
-
-    // Real-time server info updates
-    function updateServerInfo() {
-        const playerCount = document.querySelector('.info-card:first-child .info-content p');
-        const currentPlayers = Math.floor(Math.random() * 10) + 15; // 15-24 players
-        if (playerCount) {
-            playerCount.textContent = `${currentPlayers}/32`;
-        }
-
-        const ping = document.querySelector('.info-card:last-child .info-content p');
-        const currentPing = Math.floor(Math.random() * 20) + 10; // 10-30ms
-        if (ping) {
-            ping.textContent = `${currentPing}ms`;
-        }
-    }
-
-    // Update server info every 5 seconds
-    setInterval(updateServerInfo, 5000);
-
-    // Notification system
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        
-        // Add notification styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'success' ? '#00ff00' : type === 'error' ? '#ff0000' : '#ff8c00'};
-            color: #000000;
-            padding: 15px 20px;
-            border-radius: 5px;
-            font-weight: 600;
-            z-index: 10000;
-            animation: slideInNotification 0.3s ease;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOutNotification 0.3s ease';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
-
-    // Modal system
-    function showModal(title, content) {
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>${title}</h3>
-                    <button class="modal-close">&times;</button>
-                </div>
-                <div class="modal-body">
-                    ${content}
-                </div>
-            </div>
-        `;
-        
-        // Add modal styles
-        const modalStyles = `
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease;
-            }
-            .modal-content {
-                background: #1a1a1a;
-                border: 2px solid #ff8c00;
-                border-radius: 10px;
-                max-width: 500px;
-                width: 90%;
-                max-height: 80vh;
-                overflow-y: auto;
-            }
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 20px;
-                border-bottom: 1px solid #333;
-            }
-            .modal-header h3 {
-                color: #ff8c00;
-                font-size: 1.3rem;
-            }
-            .modal-close {
-                background: none;
-                border: none;
-                color: #ffffff;
-                font-size: 1.5rem;
-                cursor: pointer;
-                padding: 5px;
-            }
-            .modal-body {
-                padding: 20px;
-            }
-            .stats-content, .leaderboard-content {
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-            .stat-item, .leader-item {
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-                background: rgba(40,40,40,0.8);
-                border-radius: 5px;
-            }
-            .stat-label, .player {
-                color: #cccccc;
-            }
-            .stat-value, .score {
-                color: #ff8c00;
-                font-weight: 600;
-            }
-            .rank {
-                color: #00ff00;
-                font-weight: 700;
-            }
-        `;
-        
-        if (!document.querySelector('#modal-styles')) {
-            const styleSheet = document.createElement('style');
-            styleSheet.id = 'modal-styles';
-            styleSheet.textContent = modalStyles;
-            document.head.appendChild(styleSheet);
-        }
-        
-        document.body.appendChild(modal);
-        
-        // Close modal functionality
-        const closeBtn = modal.querySelector('.modal-close');
-        closeBtn.addEventListener('click', () => {
-            document.body.removeChild(modal);
-        });
-        
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                document.body.removeChild(modal);
-            }
-        });
-    }
-
-    // Add CSS animations for notifications
-    const animationStyles = `
-        @keyframes slideInNotification {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        @keyframes slideOutNotification {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .mode-btn.active {
-            border-color: #00ff00 !important;
-            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%) !important;
-            color: #000000 !important;
-        }
-    `;
-    
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = animationStyles;
-    document.head.appendChild(styleSheet);
-
-    // Initialize with competitive mode selected
-    const competitiveBtn = document.querySelector('.mode-btn.competitive');
-    if (competitiveBtn) {
-        competitiveBtn.classList.add('active');
-    }
-
-    // Theme Toggle Functionality
+function initializePage() {
+    // Initialize theme toggle
     const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = themeToggle.querySelector('.theme-icon');
-    const themeText = themeToggle.querySelector('.theme-text');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
     
-    // Load saved theme or default to dark
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
-        themeIcon.textContent = '☀️';
-        themeText.textContent = 'AYDINLIK TEMA';
+        updateThemeToggle(true);
     }
     
-    themeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('light-theme');
+    // Initial server data fetch
+    refreshServerData();
+    
+    // Initialize activity chart
+    initializeActivityChart();
+}
+
+function toggleTheme() {
+    const body = document.body;
+    const isLight = body.classList.toggle('light-theme');
+    
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeToggle(isLight);
+}
+
+function updateThemeToggle(isLight) {
+    const themeIcon = document.querySelector('.theme-icon');
+    const themeText = document.querySelector('.theme-text');
+    
+    if (themeIcon && themeText) {
+        themeIcon.textContent = isLight ? '☀️' : '🌙';
+        themeText.textContent = isLight ? 'AÇIK TEMA' : 'KOYU TEMA';
+    }
+}
+
+function refreshServerData() {
+    updateStatus('Sunucu bilgileri güncelleniyor...', 'loading');
+    
+    setTimeout(() => {
+        const mockData = generateMockServerData();
+        updateServerInfo(mockData);
+        updatePlayersList(mockData.players);
+        updateServerStatus('online');
         
-        if (document.body.classList.contains('light-theme')) {
-            // Switch to light theme
-            themeIcon.textContent = '☀️';
-            themeText.textContent = 'AYDINLIK TEMA';
-            localStorage.setItem('theme', 'light');
-            showNotification('Aydınlık tema aktif!', 'info');
+        const serverImage = document.getElementById('serverImage');
+        if (serverImage) {
+            serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
+        }
+        
+        serverData.lastUpdate = new Date();
+        const lastUpdateElement = document.getElementById('lastUpdate');
+        if (lastUpdateElement) {
+            lastUpdateElement.textContent = formatTime(serverData.lastUpdate);
+        }
+    }, 1500);
+}
+
+function generateMockServerData() {
+    const turkishNames = [
+        'EgoDust_Pro', 'AteşKuşu', 'KurtAdam_TR', 'YıldızSavaşçısı', 'GölgeAvcısı',
+        'TurkishSniper', 'IstanbulWarrior', 'AnkaraLegend', 'BursaGamer', 'IzmirPro',
+        'CS2_Master', 'HeadHunter_TR', 'SilentKiller', 'TurkishEagle', 'RedBull_Gamer',
+        'ProPlayer_TR', 'GamerBoy_34', 'TurkishLion', 'CS_Legend', 'EgoDustFan'
+    ];
+    
+    const playerCount = Math.floor(Math.random() * 20) + 8;
+    const players = [];
+    
+    for (let i = 0; i < playerCount; i++) {
+        const randomName = turkishNames[Math.floor(Math.random() * turkishNames.length)];
+        const randomScore = Math.floor(Math.random() * 30);
+        const randomPing = Math.floor(Math.random() * 50) + 10;
+        
+        players.push({
+            name: `${randomName}_${Math.floor(Math.random() * 999)}`,
+            score: randomScore,
+            ping: randomPing,
+            time: Math.floor(Math.random() * 120) + 5
+        });
+    }
+    
+    players.sort((a, b) => b.score - a.score);
+    
+    const maps = ['de_dust2', 'de_mirage', 'de_inferno', 'de_cache', 'de_overpass', 'de_train'];
+    
+    return {
+        players: players,
+        playerCount: playerCount,
+        maxPlayers: 32,
+        map: maps[Math.floor(Math.random() * maps.length)],
+        status: 'online',
+        gameMode: 'Competitive',
+        vacSecure: 'Evet'
+    };
+}
+
+function updateServerInfo(data) {
+    const elements = {
+        playerCount: document.getElementById('playerCount'),
+        currentMap: document.getElementById('currentMap'),
+        serverStatus: document.getElementById('serverStatus'),
+        totalPlayers: document.getElementById('totalPlayers'),
+        maxPlayers: document.getElementById('maxPlayers'),
+        gameMode: document.getElementById('gameMode'),
+        vacSecure: document.getElementById('vacSecure')
+    };
+    
+    if (elements.playerCount) elements.playerCount.textContent = `${data.playerCount}/${data.maxPlayers}`;
+    if (elements.currentMap) elements.currentMap.textContent = data.map;
+    if (elements.serverStatus) elements.serverStatus.textContent = 'Çevrimiçi';
+    if (elements.totalPlayers) elements.totalPlayers.textContent = data.playerCount;
+    if (elements.maxPlayers) elements.maxPlayers.textContent = data.maxPlayers;
+    if (elements.gameMode) elements.gameMode.textContent = data.gameMode;
+    if (elements.vacSecure) elements.vacSecure.textContent = data.vacSecure;
+}
+
+function updatePlayersList(players) {
+    const playersList = document.getElementById('playersList');
+    if (!playersList) return;
+    
+    if (players.length === 0) {
+        playersList.innerHTML = `
+            <div class="no-players">
+                <p>Şu anda sunucuda oyuncu bulunmuyor</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const playersHTML = players.map((player, index) => `
+        <div class="player-item ${index < 3 ? 'top-player' : ''}">
+            <div class="player-rank">${index + 1}</div>
+            <div class="player-info">
+                <div class="player-name">${player.name}</div>
+                <div class="player-stats">
+                    <span class="score">Skor: ${player.score}</span>
+                    <span class="ping">Ping: ${player.ping}ms</span>
+                    <span class="time">Süre: ${player.time}dk</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    playersList.innerHTML = playersHTML;
+}
+
+function updateServerStatus(status) {
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    
+    if (statusIndicator && statusText) {
+        statusIndicator.className = `status-indicator ${status}`;
+        
+        switch(status) {
+            case 'online':
+                statusText.textContent = 'ÇEVRİMİÇİ • 24/7';
+                break;
+            case 'offline':
+                statusText.textContent = 'ÇEVRİMDIŞI';
+                break;
+            case 'loading':
+                statusText.textContent = 'KONTROL EDİLİYOR...';
+                break;
+        }
+    }
+}
+
+function updateStatus(message, type) {
+    const statusText = document.getElementById('statusText');
+    if (statusText) {
+        statusText.textContent = message;
+    }
+    updateServerStatus(type);
+}
+
+function startAutoRefresh() {
+    setInterval(refreshServerData, 30000);
+    
+    setInterval(() => {
+        const serverImage = document.getElementById('serverImage');
+        if (serverImage) {
+            serverImage.src = `${USERBAR_API}&_t=${Date.now()}`;
+        }
+    }, 60000);
+}
+
+function initializeActivityChart() {
+    const canvas = document.getElementById('activityChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    const hours = [];
+    const playerCounts = [];
+    
+    for (let i = 0; i < 24; i++) {
+        hours.push(`${i.toString().padStart(2, '0')}:00`);
+        let baseCount = 5;
+        if (i >= 18 || i <= 2) baseCount = 20;
+        if (i >= 12 && i <= 17) baseCount = 15;
+        if (i >= 6 && i <= 11) baseCount = 8;
+        
+        playerCounts.push(baseCount + Math.floor(Math.random() * 10));
+    }
+    
+    drawActivityChart(ctx, canvas, hours, playerCounts);
+    
+    const avgPlayers = Math.floor(playerCounts.reduce((a, b) => a + b, 0) / playerCounts.length);
+    const peakHour = hours[playerCounts.indexOf(Math.max(...playerCounts))];
+    
+    const avgElement = document.getElementById('avgPlayers');
+    const peakElement = document.getElementById('peakHour');
+    
+    if (avgElement) avgElement.textContent = `${avgPlayers} oyuncu`;
+    if (peakElement) peakElement.textContent = peakHour;
+}
+
+function drawActivityChart(ctx, canvas, hours, data) {
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = 40;
+    
+    ctx.clearRect(0, 0, width, height);
+    
+    ctx.strokeStyle = '#ff8c00';
+    ctx.fillStyle = 'rgba(255, 140, 0, 0.1)';
+    ctx.lineWidth = 2;
+    
+    const maxValue = Math.max(...data);
+    const stepX = (width - padding * 2) / (data.length - 1);
+    const stepY = (height - padding * 2) / maxValue;
+    
+    ctx.beginPath();
+    ctx.moveTo(padding, height - padding);
+    
+    data.forEach((value, index) => {
+        const x = padding + index * stepX;
+        const y = height - padding - value * stepY;
+        ctx.lineTo(x, y);
+    });
+    
+    ctx.lineTo(width - padding, height - padding);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    data.forEach((value, index) => {
+        const x = padding + index * stepX;
+        const y = height - padding - value * stepY;
+        
+        if (index === 0) {
+            ctx.moveTo(x, y);
         } else {
-            // Switch to dark theme
-            themeIcon.textContent = '🌙';
-            themeText.textContent = 'KOYU TEMA';
-            localStorage.setItem('theme', 'dark');
-            showNotification('Koyu tema aktif!', 'info');
+            ctx.lineTo(x, y);
         }
     });
+    ctx.stroke();
+    
+    ctx.fillStyle = '#ff8c00';
+    data.forEach((value, index) => {
+        const x = padding + index * stepX;
+        const y = height - padding - value * stepY;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+}
 
-    // Welcome message
+function formatTime(date) {
+    return date.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+}
+
+function copyIP() {
+    const ip = `${SERVER_IP}:${SERVER_PORT}`;
+    navigator.clipboard.writeText(ip).then(() => {
+        showNotification('IP adresi kopyalandı!');
+    }).catch(() => {
+        const textArea = document.createElement('textarea');
+        textArea.value = ip;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('IP adresi kopyalandı!');
+    });
+}
+
+function joinServer() {
+    const steamUrl = `steam://connect/${SERVER_IP}:${SERVER_PORT}`;
+    window.location.href = steamUrl;
+    showNotification('Steam açılıyor...');
+}
+
+function openTracker() {
+    window.open(TRACKER_API, '_blank');
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ff8c00;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 10000;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
     setTimeout(() => {
-        showNotification('Ego Dust\'a hoş geldiniz!', 'success');
-    }, 1000);
-});
+        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}

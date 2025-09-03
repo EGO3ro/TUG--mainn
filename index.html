@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS2 Server - Ana Menü</title>
+    <title>EGO DUST - CS2 Server Status</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -19,8 +19,8 @@
                 <span class="server-tag">CS2 SERVER</span>
             </div>
             <div class="server-status">
-                <div class="status-indicator online"></div>
-                <span>ONLINE • 24/7</span>
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">BAĞLANIYOR...</span>
             </div>
             <button class="theme-toggle" id="themeToggle">
                 <span class="theme-icon">🌙</span>
@@ -28,13 +28,18 @@
             </button>
         </header>
 
-        <div class="welcome-section">
-            <h2 class="welcome-title">Ego Dust'a Hoş Geldiniz</h2>
-            <p class="welcome-subtitle">Profesyonel CS2 deneyimi için hazır olun!</p>
-            <div class="server-ip-display">
-                <span class="ip-label">Sunucu IP:</span>
-                <span class="ip-address-main">95.173.175.34:27015</span>
-                <button class="copy-ip-main">KOPYALA</button>
+        <div class="server-tracker-main">
+            <div class="tracker-image">
+                <img src="http://tracker.oyunyoneticisi.com/userbar.php?ip=95.173.175.34&port=27015&t=2" 
+                     alt="EGO DUST Server Status" id="serverImage">
+            </div>
+            <div class="server-connect-main">
+                <div class="connect-info">
+                    <span class="ip-label">Sunucu IP:</span>
+                    <span class="ip-address-main">95.173.175.34:27015</span>
+                    <button class="copy-ip-main" onclick="copyIP()">KOPYALA</button>
+                </div>
+                <button class="join-server-btn" onclick="joinServer()">SUNUCUYA KATIL</button>
             </div>
         </div>
 
@@ -47,119 +52,97 @@
                             <div class="info-icon">🎯</div>
                             <div class="info-content">
                                 <h3>OYUNCU SAYISI</h3>
-                                <p>18/32</p>
+                                <p id="playerCount">-/-</p>
                             </div>
                         </div>
                         <div class="info-card">
                             <div class="info-icon">🗺️</div>
                             <div class="info-content">
                                 <h3>AKTİF HARITA</h3>
-                                <p>de_dust2</p>
+                                <p id="currentMap">-</p>
                             </div>
                         </div>
                         <div class="info-card">
                             <div class="info-icon">⚡</div>
                             <div class="info-content">
-                                <h3>PING</h3>
-                                <p>15ms</p>
+                                <h3>SUNUCU DURUMU</h3>
+                                <p id="serverStatus">Kontrol ediliyor...</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="menu-section game-modes">
-                    <h2>OYUN MODLARI</h2>
-                    <div class="mode-buttons">
-                        <button class="mode-btn competitive">
-                            <div class="mode-icon">🏆</div>
-                            <span>REKABETÇİ</span>
-                        </button>
-                        <button class="mode-btn casual">
-                            <div class="mode-icon">🎮</div>
-                            <span>GÜNLÜK</span>
-                        </button>
-                        <button class="mode-btn deathmatch">
-                            <div class="mode-icon">💀</div>
-                            <span>ÖLÜM MAÇI</span>
-                        </button>
-                        <button class="mode-btn retake">
-                            <div class="mode-icon">🔄</div>
-                            <span>RETAKE</span>
-                        </button>
+                <div class="menu-section current-players">
+                    <h2>ÇEVRİMİÇİ OYUNCULAR</h2>
+                    <div class="players-container">
+                        <div class="players-list" id="playersList">
+                            <div class="loading-players">
+                                <div class="spinner"></div>
+                                <p>Oyuncular yükleniyor...</p>
+                            </div>
+                        </div>
+                        <div class="players-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Toplam Oyuncu:</span>
+                                <span class="stat-value" id="totalPlayers">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Maksimum Slot:</span>
+                                <span class="stat-value" id="maxPlayers">-</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="menu-section quick-actions">
-                    <h2>HIZLI ERİŞİM</h2>
+                <div class="menu-section server-details">
+                    <h2>SUNUCU DETAYLARI</h2>
+                    <div class="server-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Sunucu Adı:</span>
+                            <span class="detail-value" id="serverName">EGO DUST CS2</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Oyun Türü:</span>
+                            <span class="detail-value" id="gameMode">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">VAC Güvenli:</span>
+                            <span class="detail-value" id="vacSecure">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Son Güncelleme:</span>
+                            <span class="detail-value" id="lastUpdate">-</span>
+                        </div>
+                    </div>
                     <div class="action-buttons">
-                        <button class="action-btn join-server">
-                            <span>SUNUCUYA KATIL</span>
+                        <button class="action-btn refresh-btn" onclick="refreshServerData()">
+                            <span>🔄 YENİLE</span>
                         </button>
-                        <button class="action-btn view-stats">
-                            <span>İSTATİSTİKLER</span>
-                        </button>
-                        <button class="action-btn leaderboard">
-                            <span>LIDERLIK TABLOSU</span>
-                        </button>
-                        <button class="action-btn discord">
-                            <span>DISCORD</span>
+                        <button class="action-btn tracker-btn" onclick="openTracker()">
+                            <span>📊 DETAYLI İSTATİSTİK</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="menu-section recent-matches">
-                    <h2>SON MAÇLAR</h2>
-                    <div class="match-list">
-                        <div class="match-item">
-                            <div class="match-map">de_mirage</div>
-                            <div class="match-score">16-14</div>
-                            <div class="match-result win">KAZANDIN</div>
-                        </div>
-                        <div class="match-item">
-                            <div class="match-map">de_inferno</div>
-                            <div class="match-score">13-16</div>
-                            <div class="match-result loss">KAYBETTİN</div>
-                        </div>
-                        <div class="match-item">
-                            <div class="match-map">de_cache</div>
-                            <div class="match-score">16-8</div>
-                            <div class="match-result win">KAZANDIN</div>
-                        </div>
+                <div class="menu-section server-activity">
+                    <h2>SUNUCU AKTİVİTESİ</h2>
+                    <div class="activity-chart">
+                        <canvas id="activityChart" width="400" height="200"></canvas>
                     </div>
-                </div>
-            </div>
-
-            <div class="bottom-panel">
-                <div class="player-info">
-                    <div class="player-avatar">
-                        <div class="rank-badge">🥇</div>
-                    </div>
-                    <div class="player-details">
-                        <h3>OYUNCU ADI</h3>
-                        <p>Rütbe: Global Elite</p>
-                        <p>Seviye: 40</p>
-                    </div>
-                </div>
-                <div class="server-connect">
-                    <div class="connect-info">
-                        <p>Sunucu IP: <span class="ip-address">95.173.175.34:27015</span></p>
-                        <button class="copy-ip">KOPYALA</button>
+                    <div class="activity-info">
+                        <div class="activity-item">
+                            <span class="activity-label">Son 24 Saat Ortalama:</span>
+                            <span class="activity-value" id="avgPlayers">-</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-label">En Yoğun Saat:</span>
+                            <span class="activity-value" id="peakHour">-</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-    <footer class="server-tracker">
-        <div class="tracker-container">
-            <h3>Sunucu Durumu</h3>
-            <a href="https://tracker.oyunyoneticisi.com/?ip=95.173.175.34&port=27015" target="_blank">
-                <img src="http://tracker.oyunyoneticisi.com/userbar.php?ip=95.173.175.34&port=27015&t=2" 
-                     alt="EGO DUST CS2 Server Status" 
-                     title="Sunucu durumunu görmek için tıklayın">
-            </a>
-        </div>
-    </footer>
 
     <script src="script.js"></script>
 </body>
