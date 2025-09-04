@@ -1277,6 +1277,80 @@ body.light-theme .tracker-message ul {
     color: #555555;
 }
 
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff8c00 0%, #e07600 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 10000;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+    border: 1px solid rgba(255, 140, 0, 0.6);
+    font-family: 'Rajdhani', sans-serif;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.notification-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.notification-success {
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border-color: rgba(0, 255, 0, 0.6);
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.4);
+}
+
+.notification-error {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    border-color: rgba(255, 0, 0, 0.6);
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+}
+
+/* Light theme notification adjustments */
+body.light-theme .notification {
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 /* Server Info Modal Styles */
 .server-info-modal {
     position: fixed;
